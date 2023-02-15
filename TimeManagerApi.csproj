@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.14" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.3" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.3" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="TimeManagerApi.Core\obj\project.assets.json" />
+      <_ContentIncludedByDefault Remove="TimeManagerApi.Core\obj\project.packagespec.json" />
+      <_ContentIncludedByDefault Remove="TimeManagerApi.Core\obj\TimeManagerApi.Core.csproj.nuget.dgspec.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="TimeManagerApi.Core\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="TimeManagerApi.Core\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="TimeManagerApi.Core\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="TimeManagerApi.Core\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="TimeManagerApi.Core\TimeManagerApi.Core.csproj" />
+    </ItemGroup>
+
+</Project>
