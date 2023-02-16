@@ -2,5 +2,5 @@
 
 public class RegistrationModel : AuthorizationModel
 {
-    public string SecretWord { get; set; } = null!;
+    public string Email { get; set; } = null!;
 }

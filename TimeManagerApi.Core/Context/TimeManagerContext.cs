@@ -16,7 +16,8 @@ public class TimeManagerContext : DbContext
         modelBuilder.Entity<User>().Property(x => x.UserName).HasMaxLength(50);
         modelBuilder.Entity<User>().Property(x => x.Password).IsRequired();
         modelBuilder.Entity<User>().Property(x => x.Password).HasMaxLength(50);
-        modelBuilder.Entity<User>().Property(x => x.SecretWord).IsRequired();
+        modelBuilder.Entity<User>().Property(x => x.Email).IsRequired();
+        modelBuilder.Entity<User>().Property(x => x.Email).HasMaxLength(100);
         modelBuilder.Entity<User>().HasIndex(x => x.UserName).IsUnique();
     }
 }

@@ -8,7 +8,8 @@ public class FamilyMoviesLibraryContextFactory : IDesignTimeDbContextFactory<Tim
     public TimeManagerContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<TimeManagerContext>();
-        optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=TimeManager;Username=postgres;Password=12345rvs");
+        //optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=TimeManager;Username=postgres;Password=12345rvs");
+        optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=TimeManager;Username=postgres;Password=123QWE!@#");
         return new TimeManagerContext(optionsBuilder.Options);
     }
 }
