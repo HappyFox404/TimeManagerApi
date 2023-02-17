@@ -1,12 +1,15 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net.Mail;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using TimeManagerApi.Core.Context;
 using TimeManagerApi.Core.Context.Entity;
+using TimeManagerApi.Core.Extensions;
 using TimeManagerApi.Models;
 using TimeManagerApi.Models.Requests;
 using TimeManagerApi.Models.Requests.Authorization;
@@ -16,25 +19,26 @@ using TimeManagerApi.Models.Settings;
 namespace TimeManagerApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-public class AuthorizationController : ControllerBase
+[Route("api/user")]
+public class UserController : ControllerBase
 {
-    private readonly ILogger<AuthorizationController> _logger;
+    private readonly ILogger<UserController> _logger;
     private readonly TimeManagerContext _context;
     private readonly TokenSettings _tokenSettings;
     
-    public AuthorizationController(ILogger<AuthorizationController> logger, TimeManagerContext context, IOptions<TokenSettings> tokenSettings)
+    public UserController(ILogger<UserController> logger, TimeManagerContext context, IOptions<TokenSettings> tokenSettings)
     {
         _logger = logger;
         _context = context;
         _tokenSettings = tokenSettings.Value;
     }
-    
-    [HttpGet]
+
+    [HttpGet("authorization")]
     public async Task<IResult> Get(AuthorizationModel model)
     {
+        _logger.LogError("123");
         var needUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == model.UserName
-        && x.Password == model.Password);
+        && x.Password == model.Password.GetHashSha256());
         if (needUser != null)
         {
             return Results.Json(StandartResponseAnswer.Ok<AuthorizationResponse>(new()
@@ -54,11 +58,25 @@ public class AuthorizationController : ControllerBase
             return Results.Json(StandartResponseAnswer.Error("Пользователь с таким именем уже существует"));
         if(String.IsNullOrWhiteSpace(model.Email))
             return Results.Json(StandartResponseAnswer.Error("Email обязателен для регистрации"));
-        
+        if(model.UserName.Length < 5 || model.UserName.Length > 50)
+            return Results.Json(StandartResponseAnswer.Error("Имя пользователя не может быть меньше 5 и больше 50 символов"));
+        if(model.Password.Length < 5 || model.Password.Length > 50)
+            return Results.Json(StandartResponseAnswer.Error("Пароль не может быть меньше 5 и больше 50 символов"));
+        if(model.Email.Length < 5 || model.Email.Length > 100)
+            return Results.Json(StandartResponseAnswer.Error("Email не может быть меньше 5 и больше 100 символов"));
+        try
+        {
+            MailAddress m = new MailAddress(model.Email);
+        }
+        catch (FormatException)
+        {
+            return Results.Json(StandartResponseAnswer.Error("не похоже на Email"));
+        }
+
         var newUser = new User()
         {
             UserName = model.UserName,
-            Password = model.Password,
+            Password = model.Password.GetHashSha256(),
             Email = model.Email
         };
         await _context.Users.AddAsync(newUser);

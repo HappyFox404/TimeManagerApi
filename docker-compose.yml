@@ -1,8 +1,7 @@
-version: "1.0"
+﻿version: '3.3'
 
 services:
-  backend:
-    image: ${DOCKER_REGISTRY-}timemanagerapi
-    build:
-      context: .
-      dockerfile: Dockerfile
+  timemanagerapi:
+    build: .
+    ports:
+      - '5100:80'
