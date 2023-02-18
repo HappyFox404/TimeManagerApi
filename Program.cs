@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using NLog.Web;
 using TimeManagerApi.Core.Context;
 using TimeManagerApi.Models.Settings;
+using TimeManagerApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 builder.Services.AddControllers();
+builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

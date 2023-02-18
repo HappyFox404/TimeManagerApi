@@ -1,0 +1,129 @@
+{
+	"info": {
+		"_postman_id": "7bd2db2d-bcba-4742-9210-cf2646ac132d",
+		"name": "TimeManagerApi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20760208"
+	},
+	"item": [
+		{
+			"name": "Пользователь",
+			"item": [
+				{
+					"name": "Авторизация",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"userName\": \"HappyFox404\",\r\n  \"password\": \"12345\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{TimeManagerApiUrl}}/api/user/authorization",
+							"host": [
+								"{{TimeManagerApiUrl}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"authorization"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Регистрация",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"userName\": \"HappyFox404\",\r\n  \"password\": \"12345\",\r\n  \"email\": \"happyfox404@yandex.ru\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{TimeManagerApiUrl}}/api/user/register",
+							"host": [
+								"{{TimeManagerApiUrl}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Обновление токена",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{TimeManagerApiUrl}}/api/user/refresh?refreshToken",
+							"host": [
+								"{{TimeManagerApiUrl}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"refresh"
+							],
+							"query": [
+								{
+									"key": "refreshToken",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "TimeManagerApiUrl",
+			"value": "http://localhost:5000",
+			"type": "string"
+		}
+	]
+}
