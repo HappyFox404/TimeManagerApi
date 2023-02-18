@@ -40,11 +40,19 @@ public class UserController : ControllerBase
         && x.Password == model.Password.GetHashSha256());
         if (needUser != null)
         {
-            return StandartResponseAnswer.Ok<AuthorizationResponse>(new()
+            try
             {
-                Token = GenerateToken(needUser),
-                RefreshToken = GenerateToken(needUser,true)
-            });
+                return StandartResponseAnswer.Ok<AuthorizationResponse>(new()
+                {
+                    Token = GenerateToken(needUser),
+                    RefreshToken = GenerateToken(needUser, true)
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Ошибка при возвращение данных авторизации пользователя {user}. {ex}",model.UserName, ex);
+                return StandartResponseAnswer.Error("Во время авторизации произошла ошибка. Обратитесь в тех. подддержку.");
+            }
         }
         return StandartResponseAnswer.Error("Не найден пользователь");
     }
@@ -80,12 +88,20 @@ public class UserController : ControllerBase
         };
         await _context.Users.AddAsync(newUser);
         await _context.SaveChangesAsync();
-            
-        return StandartResponseAnswer.Ok<AuthorizationResponse>(new()
+
+        try
         {
-            Token = GenerateToken(newUser),
-            RefreshToken = GenerateToken(newUser, true)
-        });
+            return StandartResponseAnswer.Ok<AuthorizationResponse>(new()
+            {
+                Token = GenerateToken(newUser),
+                RefreshToken = GenerateToken(newUser, true)
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Ошибка при возвращение данных при регистрации пользователя {user}. {ex}",model.UserName, ex);
+            return StandartResponseAnswer.Error("Во время регистрации произошла ошибка. Обратитесь в тех. подддержку.");
+        }
     }
 
     [HttpGet("refresh")]
@@ -100,7 +116,7 @@ public class UserController : ControllerBase
         {
             jsonToken = (new JwtSecurityTokenHandler().ReadToken(refreshToken)) as JwtSecurityToken;
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
             return StandartResponseAnswer.Error(defaultSecureError);
         }
@@ -115,12 +131,20 @@ public class UserController : ControllerBase
             var needUser = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
             if (needUser == null) 
                 return StandartResponseAnswer.Error(defaultSecureError);
-            
-            return StandartResponseAnswer.Ok<AuthorizationResponse>(new()
+
+            try
             {
-                Token = GenerateToken(needUser),
-                RefreshToken = GenerateToken(needUser, true)
-            });
+                return StandartResponseAnswer.Ok<AuthorizationResponse>(new()
+                {
+                    Token = GenerateToken(needUser),
+                    RefreshToken = GenerateToken(needUser, true)
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Ошибка при обновлении токена пользователя {user}. {ex}",needUser.UserName, ex);
+                return StandartResponseAnswer.Error("Во время обновлении токена произошла ошибка. Обратитесь в тех. подддержку.");
+            }
         }
         return StandartResponseAnswer.Error(defaultSecureError);
     }

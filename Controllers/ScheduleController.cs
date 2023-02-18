@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using TimeManagerApi.Core.Context;
 using TimeManagerApi.Core.Context.Entity;
 using TimeManagerApi.Models;
-using TimeManagerApi.Models.Requests.Schedule;
+using TimeManagerApi.Models.Requests;
 using TimeManagerApi.Services;
 
 namespace TimeManagerApi.Controllers;
@@ -59,19 +59,19 @@ public class ScheduleController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IResult> Post([FromBody] DateTime day)
+    public async Task<IResult> Post(ScheduleCreate model)
     {
-        if(day == default)
+        if(model.Day == default)
             return StandartResponseAnswer.Error("Передана неверная дата");
         var currentUserId = await _userService.GetCurrentUserId();
-        var isExsistSchedule = await _context.Schedules.FirstOrDefaultAsync(x => x.UserId == currentUserId && x.Day == day);
+        var isExsistSchedule = await _context.Schedules.FirstOrDefaultAsync(x => x.UserId == currentUserId && x.Day == model.Day);
         if (isExsistSchedule != null)
             return StandartResponseAnswer.Error(isExsistSchedule, "Расписание уже существует");
 
         var newSchedule = new Schedule()
         {
             UserId = currentUserId,
-            Day = day
+            Day = model.Day
         };
 
         try
