@@ -129,13 +129,13 @@ public class ScheduleController : ControllerBase
         {
             _context.Schedules.Remove(needSchedule);
             await _context.SaveChangesAsync();
+
+            return StandartResponseAnswer.Ok("Расписание успешно удалено");
         }
         catch (Exception ex)
         {
             _logger.LogError("При изменении расписания у пользователя {id}, произошла ошбика: {ex}", currentUserId, ex);
             return StandartResponseAnswer.Error("Произошла ошибка. Расписание не создано");
         }
-
-        return StandartResponseAnswer.Ok("Расписание успешно удалено");
     }
 }

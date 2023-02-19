@@ -347,6 +347,303 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Временные метки",
+			"item": [
+				{
+					"name": "Создание временной метки",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ACCESS_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"time\": \"2023-02-19T20:00:00\",\r\n  \"title\": \"Тест2\",\r\n  \"description\": \"\",\r\n  \"isNotify\": true,\r\n  \"scheduleId\": \"6afed31e-f38c-4e28-b7a8-84486689f36a\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{TimeManagerApiUrl}}/api/timestamp",
+							"host": [
+								"{{TimeManagerApiUrl}}"
+							],
+							"path": [
+								"api",
+								"timestamp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Создание временной метки с расписанием",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ACCESS_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"time\": \"2023-02-19T21:00:00\",\r\n  \"title\": \"Тест2\",\r\n  \"description\": \"\",\r\n  \"isNotify\": true,\r\n  \"Day\": \"2023-02-19T20:00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{TimeManagerApiUrl}}/api/timestamp/withschedule",
+							"host": [
+								"{{TimeManagerApiUrl}}"
+							],
+							"path": [
+								"api",
+								"timestamp",
+								"withschedule"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Создание временной метки с расписанием Copy",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ACCESS_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"time\": \"2023-02-19T21:00:00\",\r\n  \"title\": \"Тест редактирования 2\",\r\n  \"description\": \"Какое то описание\",\r\n  \"isNotify\": true,\r\n  \"timeStampId\": \"270b4b5b-7a60-427b-b6c6-5daccea27f9b\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{TimeManagerApiUrl}}/api/timestamp",
+							"host": [
+								"{{TimeManagerApiUrl}}"
+							],
+							"path": [
+								"api",
+								"timestamp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удаление временной метки с расписанием",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ACCESS_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{TimeManagerApiUrl}}/api/timestamp?timeStampId=370d467b-fb42-41fb-a83e-d553d56526cf",
+							"host": [
+								"{{TimeManagerApiUrl}}"
+							],
+							"path": [
+								"api",
+								"timestamp"
+							],
+							"query": [
+								{
+									"key": "timeStampId",
+									"value": "370d467b-fb42-41fb-a83e-d553d56526cf"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Временные метки по id расписания",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ACCESS_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{TimeManagerApiUrl}}/api/timestamp?scheduleId=9b95a5b0-09cb-4f2c-b3ed-1f01300215c2",
+							"host": [
+								"{{TimeManagerApiUrl}}"
+							],
+							"path": [
+								"api",
+								"timestamp"
+							],
+							"query": [
+								{
+									"key": "scheduleId",
+									"value": "9b95a5b0-09cb-4f2c-b3ed-1f01300215c2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Временные метки по дню расписания",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ACCESS_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{TimeManagerApiUrl}}/api/timestamp/day?day=2023-02-19T20:00:00",
+							"host": [
+								"{{TimeManagerApiUrl}}"
+							],
+							"path": [
+								"api",
+								"timestamp",
+								"day"
+							],
+							"query": [
+								{
+									"key": "day",
+									"value": "2023-02-19T20:00:00"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Конкретная временная метка",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ACCESS_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{TimeManagerApiUrl}}/api/timestamp/id?id=d45b125b-207a-40d4-ba5b-d1f05362c4c5",
+							"host": [
+								"{{TimeManagerApiUrl}}"
+							],
+							"path": [
+								"api",
+								"timestamp",
+								"id"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "d45b125b-207a-40d4-ba5b-d1f05362c4c5"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [

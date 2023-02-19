@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TimeManagerApi.Core.Context;
@@ -11,9 +12,11 @@ using TimeManagerApi.Core.Context;
 namespace TimeManagerApi.Core.Migrations
 {
     [DbContext(typeof(TimeManagerContext))]
-    partial class TimeManagerContextModelSnapshot : ModelSnapshot
+    [Migration("20230219123854_AddTimeStamp")]
+    partial class AddTimeStamp
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,8 +42,6 @@ namespace TimeManagerApi.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Schedules");
                 });
 
@@ -55,9 +56,6 @@ namespace TimeManagerApi.Core.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
-
-                    b.Property<bool>("IsNotify")
-                        .HasColumnType("boolean");
 
                     b.Property<Guid>("ScheduleId")
                         .HasColumnType("uuid");
@@ -74,7 +72,7 @@ namespace TimeManagerApi.Core.Migrations
 
                     b.HasIndex("ScheduleId");
 
-                    b.ToTable("TimeStamps");
+                    b.ToTable("TimeStamp");
                 });
 
             modelBuilder.Entity("TimeManagerApi.Core.Context.Entity.User", b =>
@@ -124,6 +122,7 @@ namespace TimeManagerApi.Core.Migrations
                     b.HasOne("TimeManagerApi.Core.Context.Entity.Schedule", "Schedule")
                         .WithMany("TimeStamps")
                         .HasForeignKey("ScheduleId")
+                        .HasPrincipalKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
