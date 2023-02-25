@@ -34,10 +34,10 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("authorization")]
-    public async Task<IResult> Get(AuthorizationModel model)
+    public async Task<IResult> Get(string userName, string password)
     {
-        var needUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == model.UserName
-        && x.Password == model.Password.GetHashSha256());
+        var needUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName
+        && x.Password == password.GetHashSha256());
         if (needUser != null)
         {
             try
@@ -50,7 +50,7 @@ public class UserController : ControllerBase
             }
             catch (Exception ex)
             {
-                _logger.LogError("Ошибка при возвращение данных авторизации пользователя {user}. {ex}",model.UserName, ex);
+                _logger.LogError("Ошибка при возвращение данных авторизации пользователя {user}. {ex}",userName, ex);
                 return StandartResponseAnswer.Error("Во время авторизации произошла ошибка. Обратитесь в тех. подддержку.");
             }
         }
