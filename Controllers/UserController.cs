@@ -60,6 +60,9 @@ public class UserController : ControllerBase
     [HttpPost("register")]
     public async Task<IResult> Post(RegistrationModel model)
     {
+        if(await _context.Users.AnyAsync(x => x.Email == model.Email))
+            return StandartResponseAnswer.Error("Пользователь с таким email уже существует");
+        
         var needUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == model.UserName);
         if (needUser != null)
             return StandartResponseAnswer.Error("Пользователь с таким именем уже существует");
