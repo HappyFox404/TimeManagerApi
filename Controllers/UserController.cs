@@ -34,7 +34,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("authorization")]
-    public async Task<IResult> Get(string userName, string password)
+    public async Task<StandartResponse<AuthorizationResponse>> Get(string userName, string password)
     {
         var needUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName
         && x.Password == password.GetHashSha256());
@@ -42,7 +42,7 @@ public class UserController : ControllerBase
         {
             try
             {
-                return StandartResponseAnswer.Ok<AuthorizationResponse>(new()
+                return StandartResponseAnswer.Ok(new AuthorizationResponse()
                 {
                     Token = GenerateToken(needUser),
                     RefreshToken = GenerateToken(needUser, true)
@@ -51,36 +51,36 @@ public class UserController : ControllerBase
             catch (Exception ex)
             {
                 _logger.LogError("Ошибка при возвращение данных авторизации пользователя {user}. {ex}",userName, ex);
-                return StandartResponseAnswer.Error("Во время авторизации произошла ошибка. Обратитесь в тех. подддержку.");
+                return StandartResponseAnswer.Error<AuthorizationResponse>("Во время авторизации произошла ошибка. Обратитесь в тех. подддержку.");
             }
         }
-        return StandartResponseAnswer.Error("Не найден пользователь");
+        return StandartResponseAnswer.Error<AuthorizationResponse>("Не найден пользователь");
     }
     
     [HttpPost("register")]
-    public async Task<IResult> Post(RegistrationModel model)
+    public async Task<StandartResponse<AuthorizationResponse>> Post(RegistrationModel model)
     {
         if(await _context.Users.AnyAsync(x => x.Email == model.Email))
-            return StandartResponseAnswer.Error("Пользователь с таким email уже существует");
+            return StandartResponseAnswer.Error<AuthorizationResponse>("Пользователь с таким email уже существует");
         
-        var needUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == model.UserName);
+        var needUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == model.UserName.ToLower());
         if (needUser != null)
-            return StandartResponseAnswer.Error("Пользователь с таким именем уже существует");
+            return StandartResponseAnswer.Error<AuthorizationResponse>("Пользователь с таким именем уже существует");
         if(String.IsNullOrWhiteSpace(model.Email))
-            return StandartResponseAnswer.Error("Email обязателен для регистрации");
+            return StandartResponseAnswer.Error<AuthorizationResponse>("Email обязателен для регистрации");
         if(model.UserName.Length < 5 || model.UserName.Length > 50)
-            return StandartResponseAnswer.Error("Имя пользователя не может быть меньше 5 и больше 50 символов");
+            return StandartResponseAnswer.Error<AuthorizationResponse>("Имя пользователя не может быть меньше 5 и больше 50 символов");
         if(model.Password.Length < 5 || model.Password.Length > 50)
-            return StandartResponseAnswer.Error("Пароль не может быть меньше 5 и больше 50 символов");
+            return StandartResponseAnswer.Error<AuthorizationResponse>("Пароль не может быть меньше 5 и больше 50 символов");
         if(model.Email.Length < 5 || model.Email.Length > 100)
-            return StandartResponseAnswer.Error("Email не может быть меньше 5 и больше 100 символов");
+            return StandartResponseAnswer.Error<AuthorizationResponse>("Email не может быть меньше 5 и больше 100 символов");
         try
         {
             MailAddress m = new MailAddress(model.Email);
         }
         catch (FormatException)
         {
-            return StandartResponseAnswer.Error("не похоже на Email");
+            return StandartResponseAnswer.Error<AuthorizationResponse>("Не похоже на Email");
         }
 
         var newUser = new User()
@@ -94,7 +94,7 @@ public class UserController : ControllerBase
 
         try
         {
-            return StandartResponseAnswer.Ok<AuthorizationResponse>(new()
+            return StandartResponseAnswer.Ok(new AuthorizationResponse()
             {
                 Token = GenerateToken(newUser),
                 RefreshToken = GenerateToken(newUser, true)
@@ -103,16 +103,16 @@ public class UserController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError("Ошибка при возвращение данных при регистрации пользователя {user}. {ex}",model.UserName, ex);
-            return StandartResponseAnswer.Error("Во время регистрации произошла ошибка. Обратитесь в тех. подддержку.");
+            return StandartResponseAnswer.Error<AuthorizationResponse>("Во время регистрации произошла ошибка. Обратитесь в тех. подддержку.");
         }
     }
 
     [HttpGet("refresh")]
-    public async Task<IResult> UpdateToken(string refreshToken)
+    public async Task<StandartResponse<AuthorizationResponse>> UpdateToken(string refreshToken)
     {
         string defaultSecureError = "Не удалось получить данных из токена";
         if(String.IsNullOrWhiteSpace(refreshToken))
-            return StandartResponseAnswer.Error("Передан пустой токен");
+            return StandartResponseAnswer.Error<AuthorizationResponse>("Передан пустой токен");
 
         JwtSecurityToken jsonToken;
         try
@@ -121,23 +121,23 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StandartResponseAnswer.Error(defaultSecureError);
+            return StandartResponseAnswer.Error<AuthorizationResponse>(defaultSecureError);
         }
         if (jsonToken == null)
-            return StandartResponseAnswer.Error(defaultSecureError);
+            return StandartResponseAnswer.Error<AuthorizationResponse>(defaultSecureError);
         
         Claim? user = jsonToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
         if (user == null)
-            return StandartResponseAnswer.Error(defaultSecureError);
+            return StandartResponseAnswer.Error<AuthorizationResponse>(defaultSecureError);
         if (Guid.TryParse(user.Value, out Guid userId))
         {
             var needUser = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
             if (needUser == null) 
-                return StandartResponseAnswer.Error(defaultSecureError);
+                return StandartResponseAnswer.Error<AuthorizationResponse>(defaultSecureError);
 
             try
             {
-                return StandartResponseAnswer.Ok<AuthorizationResponse>(new()
+                return StandartResponseAnswer.Ok(new AuthorizationResponse()
                 {
                     Token = GenerateToken(needUser),
                     RefreshToken = GenerateToken(needUser, true)
@@ -146,10 +146,10 @@ public class UserController : ControllerBase
             catch (Exception ex)
             {
                 _logger.LogError("Ошибка при обновлении токена пользователя {user}. {ex}",needUser.UserName, ex);
-                return StandartResponseAnswer.Error("Во время обновлении токена произошла ошибка. Обратитесь в тех. подддержку.");
+                return StandartResponseAnswer.Error<AuthorizationResponse>("Во время обновлении токена произошла ошибка. Обратитесь в тех. подддержку.");
             }
         }
-        return StandartResponseAnswer.Error(defaultSecureError);
+        return StandartResponseAnswer.Error<AuthorizationResponse>(defaultSecureError);
     }
 
     private string GenerateToken(User user, bool isRefresh = false)

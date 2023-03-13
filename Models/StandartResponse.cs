@@ -4,16 +4,17 @@ public class StandartResponse<T>
 {
     public string Message { get; set; } = null!;
     public T? Data { get; set; }
+    public int StatusCode { get; set; } = 200;
 }
 
 public class StandartResponseAnswer
 {
-    public static IResult Ok<T>(T? data, string message = "Запрос успешно обработан") => 
-        Results.Json(new StandartResponse<T>() { Data = data, Message = message }, statusCode: 200);
-    public static IResult Ok(string message = "Запрос успешно обработан") => 
-        Results.Json(new StandartResponse<object>() { Message = message }, statusCode: 200);
-    public static IResult Error<T>(T? data, string message = "Во время обработки произошла ошибка") => 
-        Results.Json(new StandartResponse<T>() { Message = message, Data = data}, statusCode: 400);
-    public static IResult Error(string message = "Во время обработки произошла ошибка") => 
-        Results.Json(new StandartResponse<object>() {Message = message }, statusCode: 400);
+    public static StandartResponse<T> Ok<T>(T? data, string message = "Запрос успешно обработан") => 
+        new() { Data = data, Message = message, StatusCode = 200};
+    public static StandartResponse<object> Ok(string message = "Запрос успешно обработан") => 
+        new() { Data = null, Message = message, StatusCode = 200};
+    public static StandartResponse<T> Error<T>(string message = "Во время обработки произошла ошибка", int statusCode = 400, T? data = default) =>
+        new() { Message = message, StatusCode = statusCode, Data = data };
+    public static StandartResponse<object> Error(string message = "Во время обработки произошла ошибка", int statusCode = 400) =>
+        new() { Message = message, StatusCode = statusCode, Data = null };
 }

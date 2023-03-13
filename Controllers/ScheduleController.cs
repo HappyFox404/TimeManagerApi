@@ -26,7 +26,7 @@ public class ScheduleController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<IResult> Get(int count = 100)
+    public async Task<StandartResponse<IEnumerable<Schedule>>> Get(int count = 100)
     {
         var currentUserId = await _userService.GetCurrentUserId();
         IEnumerable<Schedule> needSchedules = await _context.Schedules.Where(x => x.UserId == currentUserId)
@@ -35,38 +35,38 @@ public class ScheduleController : ControllerBase
     }
     
     [HttpGet("id")]
-    public async Task<IResult> GetNeed(Guid id)
+    public async Task<StandartResponse<Schedule>> GetNeed(Guid id)
     {
         if(id == default)
-            return StandartResponseAnswer.Error("Передан неверный идентификатор");
+            return StandartResponseAnswer.Error<Schedule>(message:"Передан неверный идентификатор");
         var currentUserId = await _userService.GetCurrentUserId();
         Schedule? needSchedule = await _context.Schedules.FirstOrDefaultAsync(x => x.UserId == currentUserId && x.Id == id);
         if(needSchedule != null)
             return StandartResponseAnswer.Ok(needSchedule);
-        return StandartResponseAnswer.Error("Расписание не найдено");
+        return StandartResponseAnswer.Error<Schedule>("Расписание не найдено");
     }
     
     [HttpGet("day")]
-    public async Task<IResult> GetNeed(DateTime day)
+    public async Task<StandartResponse<Schedule>> GetNeed(DateTime day)
     {
         if(day == default)
-            return StandartResponseAnswer.Error("Передана неверная дата");
+            return StandartResponseAnswer.Error<Schedule>("Передана неверная дата");
         var currentUserId = await _userService.GetCurrentUserId();
         Schedule? needSchedule = await _context.Schedules.FirstOrDefaultAsync(x => x.UserId == currentUserId && x.Day == day);
         if(needSchedule != null)
             return StandartResponseAnswer.Ok(needSchedule);
-        return StandartResponseAnswer.Error("Расписание не найдено");
+        return StandartResponseAnswer.Error<Schedule>("Расписание не найдено");
     }
 
     [HttpPost]
-    public async Task<IResult> Post(ScheduleCreate model)
+    public async Task<StandartResponse<Schedule>> Post(ScheduleCreate model)
     {
         if(model.Day == default)
-            return StandartResponseAnswer.Error("Передана неверная дата");
+            return StandartResponseAnswer.Error<Schedule>("Передана неверная дата");
         var currentUserId = await _userService.GetCurrentUserId();
         var isExsistSchedule = await _context.Schedules.FirstOrDefaultAsync(x => x.UserId == currentUserId && x.Day == model.Day);
         if (isExsistSchedule != null)
-            return StandartResponseAnswer.Error(isExsistSchedule, "Расписание уже существует");
+            return StandartResponseAnswer.Error("Расписание уже существует", data:isExsistSchedule);
 
         var newSchedule = new Schedule()
         {
@@ -82,13 +82,13 @@ public class ScheduleController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError("При добавлении расписания у пользователя {id}, произошла ошбика: {ex}", currentUserId, ex);
-            return StandartResponseAnswer.Error("Произошла ошибка. Расписание не создано");
+            return StandartResponseAnswer.Error<Schedule>("Произошла ошибка. Расписание не создано");
         }
         return StandartResponseAnswer.Ok(newSchedule);
     }
 
     [HttpPatch]
-    public async Task<IResult> Patch(ScheduleEdit model)
+    public async Task<StandartResponse<object>> Patch(ScheduleEdit model)
     {
         if(model.Id == default)
             return StandartResponseAnswer.Error("Передан неверный идентификатор");
@@ -114,7 +114,7 @@ public class ScheduleController : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IResult> Delete(Guid id)
+    public async Task<StandartResponse<object>> Delete(Guid id)
     {
         if(id == default)
             return StandartResponseAnswer.Error("Передан неверный идентификатор");
