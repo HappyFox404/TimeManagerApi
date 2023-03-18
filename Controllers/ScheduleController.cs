@@ -30,7 +30,7 @@ public class ScheduleController : ControllerBase
     {
         var currentUserId = await _userService.GetCurrentUserId();
         IEnumerable<Schedule> needSchedules = await _context.Schedules.Where(x => x.UserId == currentUserId)
-            .OrderByDescending(x => x.Day).Take(count).ToListAsync();
+            .OrderBy(x => x.Day).Take(count).ToListAsync();
         return StandartResponseAnswer.Ok(needSchedules);
     }
     
