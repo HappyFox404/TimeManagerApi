@@ -26,6 +26,9 @@ public class UserController : ControllerBase
     private readonly TimeManagerContext _context;
     private readonly TokenSettings _tokenSettings;
     
+    private const int _tokenExpiresTime = 5;
+    private const int _refreshTokenExpiresTime = 10;
+
     public UserController(ILogger<UserController> logger, TimeManagerContext context, IOptions<TokenSettings> tokenSettings)
     {
         _logger = logger;
@@ -125,6 +128,10 @@ public class UserController : ControllerBase
         }
         if (jsonToken == null)
             return StandartResponseAnswer.Error<AuthorizationResponse>(defaultSecureError);
+        if (jsonToken.IssuedAt.AddMinutes(_tokenExpiresTime) < DateTime.Now)
+        {
+            return StandartResponseAnswer.Error<AuthorizationResponse>(defaultSecureError);
+        }
         
         Claim? user = jsonToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
         if (user == null)
@@ -164,7 +171,7 @@ public class UserController : ControllerBase
             issuer: _tokenSettings.Issuer,
             audience: _tokenSettings.Audience,
             claims: claims,
-            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes((isRefresh == false) ? 5 : 10)),
+            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes((isRefresh == false) ? _tokenExpiresTime : _refreshTokenExpiresTime)),
             signingCredentials: new SigningCredentials(_tokenSettings.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
         
         string token = new JwtSecurityTokenHandler().WriteToken(jwt);
