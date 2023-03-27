@@ -98,6 +98,9 @@ public class ScheduleController : ControllerBase
         var needSchedule = await _context.Schedules.FirstOrDefaultAsync(x => x.UserId == currentUserId && x.Id == model.Id);
         if (needSchedule == null)
             return StandartResponseAnswer.Error("Требуемое расписание не найдено");
+        var isExsistSchedule = await _context.Schedules.FirstOrDefaultAsync(x => x.UserId == currentUserId && x.Day == model.Day);
+        if (isExsistSchedule != null)
+            return StandartResponseAnswer.Error("Вы не можете перенести дату уже на существующее расписание");
 
         try
         {

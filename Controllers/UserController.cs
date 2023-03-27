@@ -27,7 +27,7 @@ public class UserController : ControllerBase
     private readonly TokenSettings _tokenSettings;
     
     private const int _tokenExpiresTime = 5;
-    private const int _refreshTokenExpiresTime = 10;
+    private const int _refreshTokenExpiresTime = 30;
 
     public UserController(ILogger<UserController> logger, TimeManagerContext context, IOptions<TokenSettings> tokenSettings)
     {
@@ -128,7 +128,15 @@ public class UserController : ControllerBase
         }
         if (jsonToken == null)
             return StandartResponseAnswer.Error<AuthorizationResponse>(defaultSecureError);
-        if (jsonToken.IssuedAt.AddMinutes(_tokenExpiresTime) < DateTime.Now)
+        if (jsonToken.Payload.Exp != null)
+        {
+            var t = jsonToken.Payload.Exp.Value.ConvertTimestampToDateTime();
+            if (jsonToken.Payload.Exp.Value.ConvertTimestampToDateTime().AddMinutes(_refreshTokenExpiresTime) < DateTime.Now)
+            {
+                return StandartResponseAnswer.Error<AuthorizationResponse>(defaultSecureError);
+            }
+        }
+        else
         {
             return StandartResponseAnswer.Error<AuthorizationResponse>(defaultSecureError);
         }
